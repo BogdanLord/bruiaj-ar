@@ -210,7 +210,7 @@ struct ZoneARView: UIViewRepresentable {
             for c in cores { c.scale = [s, s, s] }
 
             // markerul tău pulsează roșu când ești într-o zonă activă
-            if let head = userMarker?.children.last as? ModelEntity {
+            if let children = userMarker?.children, let head = Array(children).last as? ModelEntity {
                 let col: UIColor = insideZone ? UIColor(hex: "#ff5555") : .white
                 if var m = head.model {
                     m.materials = [UnlitMaterial(color: col)]
