@@ -1,0 +1,225 @@
+{
+  "meta": {
+    "app": "Virtual UO · Modul Bruiaj",
+    "kind": "simulation-scenario",
+    "note": "Date de SIMULARE. Nu reprezintă și nu produc semnale radio reale.",
+    "exportedAt": "2026-06-13T22:15:36.121Z",
+    "session": {
+      "id": "14767705-3807-4ea1-9c1c-b6fa92265033",
+      "name": "Sesiune 13.06.2026, 21:02:51"
+    }
+  },
+  "bands": [
+    {
+      "id": "GPS_L1",
+      "label": "GPS L1 C/A",
+      "centerMHz": 1575.42,
+      "bandwidthMHz": 2.046,
+      "category": "GNSS",
+      "color": "#2dd4bf",
+      "sort": 10
+    },
+    {
+      "id": "GPS_L2",
+      "label": "GPS L2C",
+      "centerMHz": 1227.6,
+      "bandwidthMHz": 2.046,
+      "category": "GNSS",
+      "color": "#22b8cf",
+      "sort": 20
+    },
+    {
+      "id": "GPS_L5",
+      "label": "GPS L5",
+      "centerMHz": 1176.45,
+      "bandwidthMHz": 24,
+      "category": "GNSS",
+      "color": "#1ca0d8",
+      "sort": 30
+    },
+    {
+      "id": "GLONASS_G1",
+      "label": "GLONASS G1",
+      "centerMHz": 1602,
+      "bandwidthMHz": 8,
+      "category": "GNSS",
+      "color": "#4dd0e1",
+      "sort": 40
+    },
+    {
+      "id": "GALILEO_E1",
+      "label": "Galileo E1",
+      "centerMHz": 1575.42,
+      "bandwidthMHz": 24,
+      "category": "GNSS",
+      "color": "#5ee0a8",
+      "sort": 50
+    },
+    {
+      "id": "GALILEO_E5",
+      "label": "Galileo E5",
+      "centerMHz": 1191.8,
+      "bandwidthMHz": 51,
+      "category": "GNSS",
+      "color": "#3fcf8e",
+      "sort": 60
+    },
+    {
+      "id": "BEIDOU_B1",
+      "label": "BeiDou B1",
+      "centerMHz": 1561.1,
+      "bandwidthMHz": 4,
+      "category": "GNSS",
+      "color": "#00ffa3",
+      "sort": 70
+    },
+    {
+      "id": "GSM_900",
+      "label": "GSM 900",
+      "centerMHz": 942.5,
+      "bandwidthMHz": 35,
+      "category": "CELLULAR",
+      "color": "#ffcc00",
+      "sort": 80
+    },
+    {
+      "id": "GSM_1800",
+      "label": "GSM 1800",
+      "centerMHz": 1842.5,
+      "bandwidthMHz": 75,
+      "category": "CELLULAR",
+      "color": "#ffb000",
+      "sort": 90
+    },
+    {
+      "id": "LTE_800",
+      "label": "LTE B20",
+      "centerMHz": 806,
+      "bandwidthMHz": 30,
+      "category": "CELLULAR",
+      "color": "#ff8c00",
+      "sort": 100
+    },
+    {
+      "id": "LTE_2600",
+      "label": "LTE B7",
+      "centerMHz": 2655,
+      "bandwidthMHz": 70,
+      "category": "CELLULAR",
+      "color": "#ff6b00",
+      "sort": 110
+    },
+    {
+      "id": "WIFI_24",
+      "label": "Wi-Fi 2.4",
+      "centerMHz": 2442,
+      "bandwidthMHz": 83.5,
+      "category": "WIFI",
+      "color": "#a855f7",
+      "sort": 120
+    },
+    {
+      "id": "WIFI_5",
+      "label": "Wi-Fi 5",
+      "centerMHz": 5500,
+      "bandwidthMHz": 160,
+      "category": "WIFI",
+      "color": "#c084fc",
+      "sort": 130
+    }
+  ],
+  "zones": [
+    {
+      "id": "98d25bbd-e899-4791-a74d-e86e376e56af",
+      "session_id": "14767705-3807-4ea1-9c1c-b6fa92265033",
+      "name": "Zonă nouă",
+      "latitude": 45.134,
+      "longitude": 26.821,
+      "radius_km": 40,
+      "intensity": 70,
+      "power_dbm": 33,
+      "band": "WIFI_5",
+      "jammer_type": "sweep",
+      "status": "active",
+      "is_active": true,
+      "color": "#ff3d7f",
+      "duration_seconds": 300,
+      "sweep_rate": 3,
+      "priority": 3,
+      "notes": null,
+      "activated_at": "2026-06-13T22:12:26.823Z",
+      "expires_at": "2026-06-13T22:17:26.823Z",
+      "created_at": "2026-06-13T20:53:30.290283+00:00",
+      "updated_at": "2026-06-13T20:53:32.817563+00:00"
+    },
+    {
+      "id": "86d22de1-ec8d-4863-860a-576afe4565fd",
+      "session_id": "14767705-3807-4ea1-9c1c-b6fa92265033",
+      "name": "Zonă nouă",
+      "latitude": 47.0549,
+      "longitude": 21.9147,
+      "radius_km": 213,
+      "intensity": 70,
+      "power_dbm": 33,
+      "band": "GPS_L1",
+      "jammer_type": "pulse",
+      "status": "active",
+      "is_active": true,
+      "color": "#ff3d7f",
+      "duration_seconds": 300,
+      "sweep_rate": 3,
+      "priority": 3,
+      "notes": null,
+      "activated_at": "2026-06-13T22:12:23.478Z",
+      "expires_at": "2026-06-13T22:17:23.478Z",
+      "created_at": "2026-06-13T22:12:18.491932+00:00",
+      "updated_at": "2026-06-13T22:12:18.491932+00:00"
+    },
+    {
+      "id": "55d1fa94-bd62-4e5d-8aa2-ae9f637d6fbf",
+      "session_id": "14767705-3807-4ea1-9c1c-b6fa92265033",
+      "name": "Zonă nouă",
+      "latitude": 45.7983,
+      "longitude": 24.1256,
+      "radius_km": 40,
+      "intensity": 70,
+      "power_dbm": 33,
+      "band": "GPS_L1",
+      "jammer_type": "barrage",
+      "status": "active",
+      "is_active": true,
+      "color": "#ff5555",
+      "duration_seconds": 300,
+      "sweep_rate": 3,
+      "priority": 3,
+      "notes": null,
+      "activated_at": "2026-06-13T22:13:19.716Z",
+      "expires_at": "2026-06-13T22:18:19.716Z",
+      "created_at": "2026-06-13T22:13:17.556241+00:00",
+      "updated_at": "2026-06-13T22:13:17.556241+00:00"
+    },
+    {
+      "id": "50539b25-58c2-46a7-b07b-f55d8984e741",
+      "session_id": "14767705-3807-4ea1-9c1c-b6fa92265033",
+      "name": "Zonă nouă",
+      "latitude": 47.162,
+      "longitude": 27.5989,
+      "radius_km": 300,
+      "intensity": 70,
+      "power_dbm": 33,
+      "band": "GPS_L1",
+      "jammer_type": "barrage",
+      "status": "active",
+      "is_active": true,
+      "color": "#ff5555",
+      "duration_seconds": 300,
+      "sweep_rate": 3,
+      "priority": 3,
+      "notes": null,
+      "activated_at": "2026-06-13T22:14:50.951+00:00",
+      "expires_at": "2026-06-13T22:19:50.951+00:00",
+      "created_at": "2026-06-13T22:14:46.005096+00:00",
+      "updated_at": "2026-06-13T22:15:10.447195+00:00"
+    }
+  ]
+}
