@@ -75,7 +75,7 @@ struct ZoneARView: UIViewRepresentable {
         private var lastInside: Bool? = nil
         private var t: Float = 0
 
-        private func setMaterial(_ e: ModelEntity?, _ mat: Material) {
+        private func setMaterial(_ e: ModelEntity?, _ mat: RealityKit.Material) {
             guard let e = e, var m = e.model else { return }
             m.materials = [mat]
             e.model = m
