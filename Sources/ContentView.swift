@@ -80,6 +80,7 @@ struct ContentView: View {
         .task {
             loc.start()
             await service.loadZones()
+            service.startAutoRefresh(every: 5)   // verifică zone noi la 5s
         }
     }
 }
@@ -91,10 +92,7 @@ struct RadarScreen: View {
         ZStack {
             Palette.bg.ignoresSafeArea()
             RadarView(zones: service.zones, user: loc.coordinate, heading: loc.heading)
-            VStack {
-                StatusHUD(service: service, loc: loc)
-                Spacer()
-            }
+            VStack { StatusHUD(service: service, loc: loc); Spacer() }
         }
     }
 }
@@ -113,9 +111,31 @@ struct ARScreen: View {
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(Palette.txtDim)
                     .padding(8)
-                    .background(.black.opacity(0.45))
+                    .background(Capsule().fill(.black.opacity(0.5)))
                     .padding(.bottom, 26)
             }
+        }
+    }
+}
+
+// ---- indicator LIVE (secunde de la ultima sincronizare) ----
+struct LivePill: View {
+    let lastSync: Date?
+    var body: some View {
+        TimelineView(.animation) { tl in
+            let now = tl.date
+            let secs = lastSync.map { max(0, Int(now.timeIntervalSince($0))) } ?? -1
+            let blink = 0.45 + 0.55 * sin(now.timeIntervalSinceReferenceDate * 3)
+            HStack(spacing: 5) {
+                Circle().fill(Palette.green).frame(width: 7, height: 7)
+                    .shadow(color: Palette.green, radius: 3).opacity(blink)
+                Text(secs >= 0 ? "LIVE · \(secs)s" : "LIVE")
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundColor(Palette.green)
+            }
+            .padding(.horizontal, 8).padding(.vertical, 4)
+            .background(Capsule().fill(Palette.green.opacity(0.10)))
+            .overlay(Capsule().stroke(Palette.green.opacity(0.35), lineWidth: 1))
         }
     }
 }
@@ -129,41 +149,44 @@ struct StatusHUD: View {
         AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     }
 
+    private func pill(_ text: String, _ color: Color) -> some View {
+        Text(text)
+            .font(.system(size: 10, weight: .bold, design: .monospaced))
+            .foregroundColor(color)
+            .padding(.horizontal, 7).padding(.vertical, 3)
+            .background(Capsule().fill(color.opacity(0.12)))
+            .overlay(Capsule().stroke(color.opacity(0.4), lineWidth: 1))
+    }
+
     var body: some View {
         let active = service.activeZones
         let d = defconLevel(active)
         let cur = currentZone(loc.coordinate, active)
 
-        VStack(alignment: .leading, spacing: 6) {
-            // permisiuni
+        VStack(alignment: .leading, spacing: 8) {
             if !cameraGranted || !loc.authorized {
                 HStack(spacing: 6) {
                     Image(systemName: "exclamationmark.triangle.fill")
                     Text(permissionText)
                 }
-                .font(.system(size: 10, design: .monospaced))
+                .font(.system(size: 10, weight: .semibold, design: .monospaced))
                 .foregroundColor(Palette.amber)
             }
 
-            // rând principal
-            HStack(spacing: 10) {
+            HStack(spacing: 8) {
                 Text("BRUIAJ AR")
-                    .font(.system(size: 12, weight: .bold, design: .monospaced))
+                    .font(.system(size: 13, weight: .heavy, design: .monospaced))
                     .foregroundColor(Palette.cyan)
-                Text("DEFCON \(d)·\(defconLabel(d))")
-                    .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundColor(defconColor(d))
+                pill("DEFCON \(d)·\(defconLabel(d))", defconColor(d))
                 Spacer()
-                Text("\(active.count) active")
-                    .font(.system(size: 11, design: .monospaced))
-                    .foregroundColor(Palette.red)
-                if service.isLoading { ProgressView().tint(Palette.cyan) }
+                LivePill(lastSync: service.lastSync)
+                if service.isLoading { ProgressView().scaleEffect(0.7).tint(Palette.cyan) }
                 Button { Task { await service.loadZones() } } label: {
-                    Image(systemName: "arrow.clockwise").foregroundColor(Palette.txt)
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 13, weight: .bold)).foregroundColor(Palette.txt)
                 }
             }
 
-            // stare poziție
             Group {
                 if let z = cur {
                     Text("⚠︎ EȘTI ÎN BRUIAJ: \(z.name) · \(z.jammerLabel) · \(z.band) · \(Int(z.intensity))%")
@@ -177,18 +200,29 @@ struct StatusHUD: View {
             .font(.system(size: 11, weight: .semibold, design: .monospaced))
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // spectru compact
+            HStack {
+                Text("SPECTRU GNSS/RF")
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .foregroundColor(Palette.txtDim)
+                Spacer()
+                Text("\(active.count) ZONE ACTIVE")
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .foregroundColor(active.isEmpty ? Palette.txtDim : Palette.red)
+            }
             SpectrumStrip(active: active)
 
             if let e = service.errorText {
                 Text(e)
-                    .font(.system(size: 10, design: .monospaced))
+                    .font(.system(size: 9, design: .monospaced))
                     .foregroundColor(Palette.amber)
                     .lineLimit(2)
             }
         }
-        .padding(10)
-        .background(.black.opacity(0.5))
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 14).fill(.black.opacity(0.55)))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Palette.cyan.opacity(0.22), lineWidth: 1))
+        .padding(.horizontal, 10)
+        .padding(.top, 8)
     }
 
     private var permissionText: String {
@@ -201,20 +235,26 @@ struct StatusHUD: View {
 struct SpectrumStrip: View {
     let active: [Zone]
     var body: some View {
-        HStack(alignment: .bottom, spacing: 4) {
+        HStack(alignment: .bottom, spacing: 5) {
             ForEach(AR_BANDS) { b in
                 let e = bandEnergy(b.id, active)
-                VStack(spacing: 2) {
-                    Capsule()
-                        .fill(e > 0 ? Palette.red : Palette.cyan.opacity(0.22))
-                        .frame(width: 8, height: CGFloat(5 + e * 30))
+                VStack(spacing: 3) {
+                    ZStack(alignment: .bottom) {
+                        Capsule().fill(Palette.cyan.opacity(0.10)).frame(width: 9, height: 32)
+                        Capsule()
+                            .fill(LinearGradient(
+                                colors: e > 0 ? [Palette.red, Palette.amber] : [Palette.cyan.opacity(0.5), Palette.cyan.opacity(0.22)],
+                                startPoint: .bottom, endPoint: .top))
+                            .frame(width: 9, height: max(5, CGFloat(6 + e * 26)))
+                            .shadow(color: e > 0 ? Palette.red.opacity(0.7) : .clear, radius: 4)
+                    }
                     Text(b.label)
-                        .font(.system(size: 7, design: .monospaced))
+                        .font(.system(size: 7, weight: .medium, design: .monospaced))
                         .foregroundColor(Palette.txtDim)
                 }
             }
             Spacer()
         }
-        .frame(height: 50, alignment: .bottom)
+        .frame(height: 46, alignment: .bottom)
     }
 }

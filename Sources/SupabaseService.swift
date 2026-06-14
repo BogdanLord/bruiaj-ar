@@ -7,10 +7,32 @@ final class SupabaseService: ObservableObject {
     @Published var errorText: String?
     @Published var lastSync: Date?
 
-    func loadZones() async {
-        isLoading = true
-        errorText = nil
-        defer { isLoading = false }
+    private var pollTask: Task<Void, Never>?
+
+    var activeZones: [Zone] { zones.filter { $0.isActive } }
+
+    // Reîmprospătare automată la fiecare `seconds` secunde (silent: fără spinner).
+    func startAutoRefresh(every seconds: UInt64 = 5) {
+        pollTask?.cancel()
+        pollTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)
+                if Task.isCancelled { break }
+                await self?.loadZones(showSpinner: false)
+            }
+        }
+    }
+
+    func stopAutoRefresh() {
+        pollTask?.cancel()
+        pollTask = nil
+    }
+
+    func loadZones() async { await loadZones(showSpinner: true) }
+
+    func loadZones(showSpinner: Bool) async {
+        if showSpinner { isLoading = true }
+        defer { if showSpinner { isLoading = false } }
 
         guard var comps = URLComponents(string: "\(Config.supabaseURL)/rest/v1/bruiaj_zones") else {
             errorText = "URL Supabase invalid."
@@ -34,6 +56,7 @@ final class SupabaseService: ObservableObject {
         req.setValue(Config.supabaseAnonKey, forHTTPHeaderField: "apikey")
         req.setValue("Bearer \(Config.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
         req.setValue("application/json", forHTTPHeaderField: "Accept")
+        req.cachePolicy = .reloadIgnoringLocalCacheData
         req.timeoutInterval = 20
 
         do {
@@ -46,10 +69,9 @@ final class SupabaseService: ObservableObject {
             let decoded = try JSONDecoder().decode([Zone].self, from: data)
             self.zones = decoded
             self.lastSync = Date()
+            self.errorText = nil
         } catch {
             errorText = "Eroare rețea/decodare: \(error.localizedDescription)"
         }
     }
-
-    var activeZones: [Zone] { zones.filter { $0.isActive } }
 }
